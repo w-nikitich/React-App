@@ -1,3 +1,5 @@
+@import '../constants.scss';
+
 .actions {
     margin: 0 10px 0 20px;
 
@@ -47,4 +49,11 @@
 
 .visible {
     display: block;
+}
+
+.edit {
+    box-sizing: border-box;
+    border: $middle-grey-color solid 1px;
+    border-radius: 4px; 
+    outline: none;
 }

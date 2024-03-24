@@ -29,7 +29,7 @@ function Task({name, description, date, priority}:TaskData) {
             </div>
 
             <div className='task__priority-block'>
-                <span className={priority}></span>
+                <span className={priority.toLowerCase()}></span>
                 <p className='task__priority'>{priority}</p>
             </div>
 

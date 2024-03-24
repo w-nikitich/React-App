@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import type { RootState } from '../redux/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateTask, resetTask } from '../redux/reducers/taskSlice';
 import plusIcon from '../images/plus_icon.png';
 import Task from './Task';
 
@@ -8,7 +11,10 @@ type TaskStatusProps = {
     visibilityChange: any
 }
 
-function TaskStatus({status, amount, visibilityChange} : TaskStatusProps) {
+function TaskStatus({ status, amount, visibilityChange }: TaskStatusProps) {
+    const task = useSelector((state: RootState) => state.task)
+    const dispatch = useDispatch()
+
     const [visibility, setVisibility] = useState('hidden');
 
     function createTask() {
@@ -31,12 +37,16 @@ function TaskStatus({status, amount, visibilityChange} : TaskStatusProps) {
             </div>
 
             <div className='task-status__add-new' onClick={() => createTask()}>
-                <img className='icon' src={plusIcon} alt='plus'/>
+                <img className='icon' src={plusIcon} alt='plus' />
                 <p>Add new card</p>
             </div>
 
             {/* TASK COMPONENT */}
-            <Task name='Task name' description='your description' date='wed 14' priority='low'/>
+            <Task
+                name={task.name}
+                description={task.description || 'Task descriptions should be unambiguous, accurate, factual.'}
+                date={task.date || 'Wed, 19 Apr'}
+                priority={task.priority || 'Low'} />
         </div>
     );
 }

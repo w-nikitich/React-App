@@ -34,11 +34,16 @@
 .task-creation__name-block {
     display: flex;
     justify-content: space-between;
+    height: 35px;
 }
 
 .task-creation__name {
     font-size: $main-text-size;
     font-weight: 900;
+
+    &::placeholder {
+        color: $black-color;
+    }
 }
 
 .task-creation__edit-block {

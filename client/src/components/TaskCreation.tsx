@@ -1,4 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef,KeyboardEvent } from 'react';
+import type { RootState } from '../redux/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateTask, resetTask } from '../redux/reducers/taskSlice';
 import editIcon from '../images/edit_icon.png';
 import statusIcon from '../images/status_icon.png';
 import calendarIcon from '../images/calendar_icon.png';
@@ -10,6 +13,24 @@ type TaskCreationProps = {
 }
 
 function TaskCreation({ visibility, visibilityChange }: TaskCreationProps) {
+    const task = useSelector((state: RootState) => state.task)
+    const dispatch = useDispatch()
+
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [name, setName] = useState(task.name)
+
+    // useEffect(() => {
+
+    // }, [isEditMode])
+
+    function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+        if (e.key ===  'Enter') {
+            // state save
+            dispatch(updateTask({name: name}))
+            console.log(task)
+            setIsEditMode(false);
+        }
+    }
 
     return (
         <div className={`task-creation ${visibility}`}>
@@ -20,9 +41,20 @@ function TaskCreation({ visibility, visibilityChange }: TaskCreationProps) {
             <div className='task-creation__info'>
                 <div className='task-creation__data-block'>
                     <div className='task-creation__name-block'>
-                        <p className='task-creation__name'>Task name</p>
+                        {/* PLACEHOLDER IS PREVIOUS STORE DATA */}
+                        {isEditMode
+                            ?
+                            <input
+                                className='task-creation__name edit'
+                                type='text'
+                                value={name} 
+                                onChange={(e) => setName(e.target.value)}
+                                onKeyDown={handleKeyDown}/>
+                            :
+                            <p className='task-creation__name visible'>{name}</p>
+                        }
 
-                        <div className='task-creation__edit-block'>
+                        <div className='task-creation__edit-block' onClick={() => setIsEditMode(!isEditMode)}>
                             <img className='icon' src={editIcon} alt='edit' />
                             <p className='task-creation__edit'>Edit task</p>
                         </div>
