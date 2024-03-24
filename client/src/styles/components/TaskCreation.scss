@@ -8,17 +8,11 @@
     width: 100%;
     background-color: $white-color;
     border-radius: 20px;
-    height: 300px;
 }
 
-.task-creation__data {
-    padding: 40px 0 40px 40px;
+.task-creation__data-block {
     width: 60%;
-}
-
-.task-creation__activity {
-    width: 40%;
-    padding: 40px 40px 40px 0;
+    padding: 40px;
 }
 
 .task-creation__close-block {
@@ -30,6 +24,11 @@
     height: 60px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+}
+
+.task-creation__info {
+    display: flex;
+    justify-content: space-between;
 }
 
 .task-creation__name-block {
@@ -54,4 +53,67 @@
 
 .task-creation__edit {
     margin-left: 5px;
+}
+
+.task-creation__details {
+    display: flex;
+    align-items: center;
+    width: 50%;
+    margin-top: 30px;
+}
+
+.task-creation__details-title {
+    display: flex;
+    align-items: center;
+    width: 40%;
+}
+
+.calendar {
+    filter: brightness(120%);
+}
+
+.priority {
+    filter: brightness(0%);
+    transform: rotate(270deg);
+}
+
+.task-creation__title {
+    margin-left: 10px;
+    color: $dark-grey-color;
+}
+
+.task-creation__data {
+    display: flex;
+    justify-content: flex-start;
+    text-align: start;
+    width: fit-content;
+    font-weight: 500;
+}
+
+.task-creation__description-block {
+    margin-top: 50px;
+    width: 80%;
+}
+
+.task-creation__description-title {
+    font-size: $medium-text-size;
+    font-weight: 700;
+}
+
+.task-creation__description {
+    margin-top: 20px;
+    color: $dark-grey-color;
+    line-height: 1.7;
+}
+
+.task-creation__activity-block {
+    background-color: $light-grey-color;
+    width: 40%;
+    padding: 40px 0 40px 40px;
+    border-bottom-right-radius: 20px;
+}
+
+.task-creation__activity-title {
+    font-size: $medium-text-size;
+    font-weight: 700;
 }
