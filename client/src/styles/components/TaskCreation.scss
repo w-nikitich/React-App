@@ -1,0 +1,57 @@
+@import '../constants.scss';
+
+.task-creation {
+    position: absolute;
+    display: flex;
+    z-index: 2;
+    top: 5%;
+    width: 100%;
+    background-color: $white-color;
+    border-radius: 20px;
+    height: 300px;
+}
+
+.task-creation__data {
+    padding: 40px 0 40px 40px;
+    width: 60%;
+}
+
+.task-creation__activity {
+    width: 40%;
+    padding: 40px 40px 40px 0;
+}
+
+.task-creation__close-block {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    background-color: $purple-color;
+    height: 60px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.task-creation__name-block {
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-creation__name {
+    font-size: $main-text-size;
+    font-weight: 900;
+}
+
+.task-creation__edit-block {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    border: $light-grey-color solid 1px;
+    border-radius: 4px;
+    padding: 5px 15px;
+    cursor: pointer;
+}
+
+.task-creation__edit {
+    margin-left: 5px;
+}

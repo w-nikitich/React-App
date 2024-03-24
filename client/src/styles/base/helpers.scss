@@ -1,0 +1,50 @@
+.actions {
+    margin: 0 10px 0 20px;
+
+    cursor: pointer;    
+
+    span::after {
+        content: '';
+        display: block;
+        background-color: $black-color;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        margin-bottom: 3px;
+    }
+
+    span:last-of-type::after {
+        margin-bottom: 0;
+    }
+}
+
+.close {
+    cursor: pointer;
+    display: block;
+
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 20px;
+        background-color: #fff;
+        top: 30%;
+        right: 5%;
+    }
+
+    &::before {
+        transform: rotate(45deg);
+    }
+
+    &::after {
+        transform: rotate(-45deg);
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}

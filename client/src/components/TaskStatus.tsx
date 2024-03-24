@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import plusIcon from '../images/plus_icon.png';
 import Task from './Task';
 
 type TaskStatusProps = {
     status: string,
-    amount: number
+    amount: number,
+    visibilityChange: any
 }
 
-function TaskStatus({status, amount} : TaskStatusProps) {
+function TaskStatus({status, amount, visibilityChange} : TaskStatusProps) {
+    const [visibility, setVisibility] = useState('hidden');
+
+    function createTask() {
+        visibilityChange('visible')
+    }
+
     return (
         <div className='task-status__column'>
             <div className='task-status__data-block'>
@@ -23,7 +30,7 @@ function TaskStatus({status, amount} : TaskStatusProps) {
                 </div>
             </div>
 
-            <div className='task-status__add-new'>
+            <div className='task-status__add-new' onClick={() => createTask()}>
                 <img className='icon' src={plusIcon} alt='plus'/>
                 <p>Add new card</p>
             </div>
