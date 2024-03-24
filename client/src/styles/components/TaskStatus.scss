@@ -1,0 +1,64 @@
+@import '../constants.scss';
+
+.task-status__column {
+    width: 20vw;
+    margin-top: 30px;
+
+    .icon {
+        filter: brightness(0);
+    }
+}
+
+.task-status__data-block {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    margin-bottom: 15px;
+    font-size: $default-text-size;
+    font-weight: 500;
+
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        background-color: $light-grey-color;
+        height: 2px;
+    }
+
+    &::before {
+        top: 0;
+    }
+
+    &::after {
+        bottom: 0;
+    }
+}
+
+.task-status__details {
+    display: flex;
+}
+
+.task-status__add-new {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $default-text-size;
+    font-weight: 500;
+    border: $light-grey-color dashed 2px;
+    border-radius: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    cursor: pointer;
+    transition: all .5s;
+
+    &:hover {
+        -webkit-box-shadow: 0px 0px 13px -7px rgba(0,0,0,0.67);
+        -moz-box-shadow: 0px 0px 13px -7px rgba(0,0,0,0.67);
+        box-shadow: 0px 0px 13px -7px rgba(0,0,0,0.67);
+    }
+
+    p {
+        margin-left: 10px;
+    }
+}

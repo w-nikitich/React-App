@@ -1,0 +1,117 @@
+@import '../constants.scss';
+
+.task__block {
+    margin-top: 15px;
+    padding: 15px;
+    font-size: $default-text-size;
+    border: $light-grey-color solid 2px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .5s;
+
+    &:hover {
+        -webkit-box-shadow: 0px 0px 13px -7px rgba(0,0,0,0.67);
+        -moz-box-shadow: 0px 0px 13px -7px rgba(0,0,0,0.67);
+        box-shadow: 0px 0px 13px -7px rgba(0,0,0,0.67);
+    }
+}
+
+.task__name-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.task__name {
+    font-weight: 500;
+}
+
+.task__description {
+    color: $middle-grey-color;
+    margin-top: 10px;
+}
+
+.task__date-block {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    color: $dark-grey-color;
+
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.task__date {
+    margin-left: 10px;
+}
+
+.task__priority-block {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    text-transform: capitalize;
+    background-color: $light-grey-color;
+    width: fit-content;
+    border-radius: 50px;
+    padding: 5px 10px;
+
+    span::after {
+        content: '';
+        display: block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .low::after {
+        background-color: $blue-grey-color;
+    }
+
+    .medium::after {
+        background-color: $middle-grey-color;
+    }
+
+    .high::after {
+        background-color: $dark-grey-color;
+    }
+}
+
+.task__priority {
+    margin-left: 5px;
+    color: $dark-grey-color;
+}
+
+.task__move {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-top: 10px;
+    background-color: $blue-grey-color;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+
+    span::before, span::after {
+        content: '';
+        position: absolute;
+        display: block;
+        top: 40%;
+        width: 2px;
+        height: 10px;
+        background-color: $comet-color;
+    }
+
+    span::before {
+        transform: rotate(-45deg);
+        right: 17px;
+    }
+
+    span::after {
+        transform: rotate(45deg);
+        right: 10px;
+    }
+}

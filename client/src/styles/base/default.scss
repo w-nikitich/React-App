@@ -1,0 +1,19 @@
+@import '../constants.scss';
+
+body {
+    font-family: $default-font;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}

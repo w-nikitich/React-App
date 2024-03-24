@@ -1,0 +1,44 @@
+@import '../constants.scss';
+
+.header-name {
+    font-size: $main-text-size;
+    font-weight: 900;
+    text-transform: capitalize;
+}
+
+.header-buttons {
+    display: flex;
+}
+
+.history-button {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    border: $light-grey-color solid 1px;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;  
+    
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    p {
+        margin-left: 5px;
+    }
+}
+
+.new-list-button {
+    display: flex;
+    align-items: center;
+    color: $white-color;
+    background-color: $purple-color;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    p {
+        margin-left: 5px;
+    }
+}
