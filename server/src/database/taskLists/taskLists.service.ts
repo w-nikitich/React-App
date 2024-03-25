@@ -1,0 +1,32 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { TaskList } from './taskLists.entity';
+import { updateTaskListRequest } from '../dto/updateTaskList.request';
+
+@Injectable()
+export class TaskListsService {
+  constructor(
+    @Inject('TASK_LISTS_REPOSITORY')
+    private taskListsRepository: typeof TaskList
+  ) {}
+
+  async findAll(): Promise<TaskList[]> {
+    return this.taskListsRepository.findAll<TaskList>();
+  }
+
+  async findOne(id: number): Promise<TaskList> {
+    return this.taskListsRepository.findOne<TaskList>({where: {id}});
+  }
+
+  async create(): Promise<TaskList> {
+    return this.taskListsRepository.create<TaskList>();
+  }
+
+  async update(id: number, data: updateTaskListRequest): Promise<TaskList> {
+    await this.taskListsRepository.update<TaskList>({data: data}, {where: {id}})
+    return this.taskListsRepository.findOne<TaskList>({where: {id}})
+  }
+
+  async destroy(id: number): Promise<number> {  
+    return this.taskListsRepository.destroy<TaskList>({where: {id}});
+  }
+}
