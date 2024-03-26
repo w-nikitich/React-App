@@ -17,8 +17,8 @@ import { updateTaskListRequest } from '../dto/updateTaskList.request';
       } 
 
       @Post()
-      create(): object {
-        return this.taskListsService.create();  
+      create(@Body() data: {name: string, amount: number}): object {
+        return this.taskListsService.create(data);  
       }
 
       @Patch(':id')

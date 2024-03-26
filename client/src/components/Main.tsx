@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Container from 'react-bootstrap/Container';
+import type { RootState } from '../redux/store';
+import { updateTask, resetTask } from '../redux/reducers/taskSlice';
 import TaskStatus from './TaskStatus';
 import TaskComponent from './TaskComponent';
 import TaskCreation from './TaskCreation';
 
 function Main() {
+    const task = useSelector((state: RootState) => state.task)
+    const dispatch = useDispatch()
+
     const [visibility, setVisibility] = useState('hidden');
+
+    useEffect(() => {
+        
+        // dispatch(updateTask({name: name}))
+    }, [task])
 
     function handleState(visibility:string) {
         setVisibility(visibility)
@@ -25,11 +36,12 @@ function Main() {
         <main>
             <Container>
                 {visibility ? <TaskCreation visibility={visibility} visibilityChange={handleState}/> : null}
-
-                <TaskStatus status='To Do' amount={0} visibilityChange={handleState}/>
-                <TaskStatus status='Planned' amount={0} visibilityChange={handleState}/>
-                <TaskStatus status='In Propgress' amount={0} visibilityChange={handleState}/>
-                <TaskStatus status='Closed' amount={0} visibilityChange={handleState}/>    
+                
+                <div className='main__task-lists'>
+                    {task.list?.map((value,index) => (
+                        <TaskStatus status={value.name} amount={value.amount} visibilityChange={handleState}/>
+                    ))}  
+                </div> 
             </Container>
         </main>
     );

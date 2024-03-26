@@ -3,6 +3,10 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 export interface TaskState {
     name: string,
+    list?: Array<{
+        name: string,
+        amount: number
+    }>,
     date?: string,
     priority?: string,
     description?: string,
@@ -18,6 +22,10 @@ export interface TaskState {
 
 const initialState: TaskState = {
     name: 'Task name',
+    list: [{
+        name: 'New list',
+        amount: 0
+    }],
     date: '',
     priority: 'Low',
     description: 'Task descriptions should be unambiguous, accurate, factual.',
@@ -32,10 +40,13 @@ export const taskSlice = createSlice({
         updateTask: (state, action: PayloadAction<TaskState>) => {
             return { ...state, ...action.payload }
         },
+        updateTaskList: (state, action: PayloadAction<{name: string, amount: number}>) => {
+            state.list?.push({name: action.payload.name, amount: action.payload.amount});
+        },
         resetTask: () => initialState
     }
 })
 
-export const { updateTask, resetTask } = taskSlice.actions
+export const { updateTask, updateTaskList, resetTask } = taskSlice.actions
 
 export default taskSlice.reducer
