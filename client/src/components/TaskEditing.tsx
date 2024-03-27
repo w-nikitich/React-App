@@ -9,26 +9,35 @@ import priorityIcon from '../images/priority_icon.png';
 
 type TaskCreationProps = {
     visibility?: string,
-    visibilityChange?: any
+    visibilityChange?: any,
+    defineId: any
+    id: number
 }
 
-function TaskCreation({ visibility, visibilityChange }: TaskCreationProps) {
-    const task = useSelector((state: RootState) => state.task)
+function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreationProps) {
+    const tasks = useSelector((state: RootState) => state.task.tasks)
     const dispatch = useDispatch()
 
     const [isEditMode, setIsEditMode] = useState(false);
-    const [name, setName] = useState(task.name)
+    const [name, setName] = useState('')
 
-    // useEffect(() => {
+    useEffect(() => {
+        findTask()
+    }, [])
 
-    // }, [isEditMode])
+    function findTask() {
+        const taskId =  tasks.findIndex(task => task.id == id)
+        console.log(tasks)
+        // setName(tasks[taskId].name)
+    }   
 
     function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
         if (e.key ===  'Enter') {
             // state save
-            dispatch(updateTask({name: name}))
-            console.log(task)
-            setIsEditMode(false);
+            // const newTaskObject = 
+            // dispatch(updateTask({name: name}))
+            // console.log(task)
+            // setIsEditMode(false);
         }
     }
 
@@ -109,4 +118,4 @@ function TaskCreation({ visibility, visibilityChange }: TaskCreationProps) {
     );
 }
 
-export default TaskCreation;
+export default TaskEditing;

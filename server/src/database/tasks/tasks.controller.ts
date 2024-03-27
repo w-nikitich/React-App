@@ -17,8 +17,8 @@ import { updateTaskRequest } from '../dto/updateTask.request';
       } 
 
       @Post()
-      create(): object {
-        return this.tasksService.create();  
+      create(@Body() data: updateTaskRequest): object {
+        return this.tasksService.create(data);  
       }
 
       @Patch(':id')

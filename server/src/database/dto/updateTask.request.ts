@@ -1,5 +1,7 @@
 export class updateTaskRequest {
     name?: string;
+
+    listId?: number;
   
     status?: string;
   

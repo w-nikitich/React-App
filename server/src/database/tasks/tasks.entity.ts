@@ -6,6 +6,9 @@ export class Task extends Model {
   name: string;
 
   @Column
+  listId: number; 
+
+  @Column
   status: string;
 
   @Column

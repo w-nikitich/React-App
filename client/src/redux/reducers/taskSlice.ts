@@ -1,52 +1,53 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-export interface TaskState {
+export interface Task {
+    id: number,
     name: string,
-    list?: Array<{
-        name: string,
-        amount: number
-    }>,
+    listId?: number,
     date?: string,
     priority?: string,
     description?: string,
-    activity?: {
+    activity?: [{
         activityText: string,
         activityTime: string
-    } | null,
+    }] | null,
     history?: {
         historyText: string,
         historyTime: string
     } | null
 }
 
-const initialState: TaskState = {
-    name: 'Task name',
-    list: [{
-        name: 'New list',
-        amount: 0
-    }],
-    date: '',
-    priority: 'Low',
-    description: 'Task descriptions should be unambiguous, accurate, factual.',
-    activity: null,
-    history: null
+export interface TasksState {
+    tasks: Task[];
 }
 
-export const taskSlice = createSlice({
-    name: 'task',
+const initialState: TasksState = {
+    tasks: []
+}
+
+export const tasksSlice = createSlice({
+    name: 'tasks',
     initialState,
     reducers: {
-        updateTask: (state, action: PayloadAction<TaskState>) => {
-            return { ...state, ...action.payload }
+        createNewTask: (state, action: PayloadAction<{createdTask: any}>) => {
+            state.tasks.push(action.payload.createdTask)
         },
-        updateTaskList: (state, action: PayloadAction<{name: string, amount: number}>) => {
-            state.list?.push({name: action.payload.name, amount: action.payload.amount});
+        updateTask: (state, action: PayloadAction<Task[]>) => {
+            // const taskId = state.tasks.findIndex(task => task.id = action.payload.updatedTask.id);
+            // state.tasks[taskId] = action.payload.updatedTask;
+            state.tasks = action.payload;
         },
-        resetTask: () => initialState
+        updateActivity: (state, action: PayloadAction<{id: number, activityText: string, activityTime: string}>) => {
+            const taskId = state.tasks.findIndex(task => task.id = action.payload.id)
+            state.tasks[taskId].activity?.push({activityText: action.payload.activityText, activityTime: action.payload.activityTime})
+        },
+        resetTask: (state, action: PayloadAction<{id: number}>) => {
+            state.tasks = state.tasks.filter((tasks) => tasks.id !== action.payload.id)
+        }
     }
 })
 
-export const { updateTask, updateTaskList, resetTask } = taskSlice.actions
+export const { updateTask, createNewTask, updateActivity, resetTask } = tasksSlice.actions
 
-export default taskSlice.reducer
+export default tasksSlice.reducer

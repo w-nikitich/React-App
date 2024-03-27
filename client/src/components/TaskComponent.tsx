@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import TaskCreation from './TaskCreation';
+import TaskEditing from './TaskEditing';
 
 type TaskComponentProps = {
     visibility?: string,
@@ -9,7 +9,7 @@ type TaskComponentProps = {
 function TaskComponent({visibility, visibilityChange}: TaskComponentProps) {
     return (
         <div>
-            <TaskCreation visibility={visibility}/>
+            {/* <TaskEditing visibility={visibility}/> */}
         </div>
     ); 
 }

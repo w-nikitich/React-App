@@ -17,8 +17,8 @@ export class TasksService {
     return this.tasksRepository.findOne<Task>({where: {id}});
   }
 
-  async create(): Promise<Task> {
-    return this.tasksRepository.create<Task>();
+  async create(data: updateTaskRequest): Promise<Task> {
+    return this.tasksRepository.create<Task>({name: data.name, listId: data.listId, status: data.status, date: data.date, priority: data.priority, description: data.description  });
   }
 
   async update(id: number, data: updateTaskRequest): Promise<Task> {

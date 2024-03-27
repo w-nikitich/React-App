@@ -2,15 +2,24 @@ import React from 'react';
 import calendarIcon from '../images/calendar_icon.png'
 
 type TaskData = {
+    id: number
+    defineId?: any,
     name: string,
     description: string,
     date: string,
-    priority: string
+    priority: string,
+    visibilityChange: any
 }
 
-function Task({name, description, date, priority}:TaskData) {
+function Task({id, defineId, name, description, date, priority, visibilityChange}:TaskData) {
+
+    function editTask(id: number) {
+        visibilityChange('visible')
+        defineId(id);
+    }
+
     return (
-        <div className='task__block'>
+        <div className='task__block' onClick={() => editTask(id)}>
             <div className='task__name-block'>
                 <p className='task__name'>{name}</p>
 
