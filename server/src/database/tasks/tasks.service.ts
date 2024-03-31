@@ -10,7 +10,7 @@ export class TasksService {
   ) {}
 
   async findAll(): Promise<Task[]> {
-    return this.tasksRepository.findAll<Task>();
+    return this.tasksRepository.findAll<Task>({order: [['createdAt', 'DESC']]});
   }
 
   async findOne(id: number): Promise<Task> {
@@ -22,7 +22,7 @@ export class TasksService {
   }
 
   async update(id: number, data: updateTaskRequest): Promise<Task> {
-    await this.tasksRepository.update<Task>({data: data}, {where: {id}})
+    await this.tasksRepository.update<Task>(data, {where: {id}})
     return this.tasksRepository.findOne<Task>({where: {id}})
   }
 

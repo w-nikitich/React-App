@@ -88,11 +88,66 @@
 }
 
 .task-creation__data {
+    position: relative;
     display: flex;
     justify-content: flex-start;
     text-align: start;
     width: fit-content;
     font-weight: 500;
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+.task-creation__status-change, .task-creation__priority-change {
+    position: absolute;
+    background-color: $white-color;
+    z-index: 3;
+    top: 100%;
+    left: -15%;
+    border-radius: 10px;
+    border: $blue-grey-color solid 2px;
+    width: fit-content;
+    white-space: nowrap;
+
+    .task-creation__status, .task-creation__priority {
+        padding: 5px 30px;
+        border-bottom: $blue-grey-color solid 2px;
+        transition: all .5s;
+    }
+
+    .task-creation__status:hover, .task-creation__priority:hover {
+        background-color: $blue-grey-color;        
+    }
+
+    .task-creation__status:last-of-type, .task-creation__priority:last-of-type {
+        border-bottom: none;
+    }
+}
+
+.task-creation__date-change {
+    position: absolute;
+    width: fit-content;
+    z-index: 2;
+    left: 130%;
+    top: -100%;
+}
+
+.custom-calendar {
+    .react-calendar__navigation {
+        display: flex;
+    }
+
+    button {
+        background-color: $white-color;
+        border: $blue-grey-color solid 1px;
+        width: max-content;
+        cursor: pointer;
+        transition: all .5s;
+
+        &:hover {
+            background-color: $blue-grey-color;
+        }
+    }
 }
 
 .task-creation__description-block {

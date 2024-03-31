@@ -33,7 +33,11 @@ export const tasksSlice = createSlice({
         createNewTask: (state, action: PayloadAction<{createdTask: any}>) => {
             state.tasks.push(action.payload.createdTask)
         },
-        updateTask: (state, action: PayloadAction<Task[]>) => {
+        updateTask: (state, action: PayloadAction<{id: number, updatedTask: any}>) => {
+            const taskId = state.tasks.findIndex(task => task.id = action.payload.id);
+            state.tasks[taskId] = action.payload.updatedTask;
+        },
+        updateAllTasks: (state, action: PayloadAction<Task[]>) => {
             // const taskId = state.tasks.findIndex(task => task.id = action.payload.updatedTask.id);
             // state.tasks[taskId] = action.payload.updatedTask;
             state.tasks = action.payload;
@@ -48,6 +52,6 @@ export const tasksSlice = createSlice({
     }
 })
 
-export const { updateTask, createNewTask, updateActivity, resetTask } = tasksSlice.actions
+export const { updateAllTasks,updateTask, createNewTask, updateActivity, resetTask } = tasksSlice.actions
 
 export default tasksSlice.reducer

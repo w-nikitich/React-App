@@ -1,7 +1,9 @@
-import React, { useEffect, useState, useRef,KeyboardEvent } from 'react';
+import React, { useEffect, useState, useRef, KeyboardEvent, useReducer } from 'react';
+import Calendar from 'react-calendar'
 import type { RootState } from '../redux/store';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateTask, resetTask } from '../redux/reducers/taskSlice';
+import axios from 'axios';
+import { updateAllTasks, updateTask, resetTask } from '../redux/reducers/taskSlice';
 import editIcon from '../images/edit_icon.png';
 import statusIcon from '../images/status_icon.png';
 import calendarIcon from '../images/calendar_icon.png';
@@ -10,60 +12,132 @@ import priorityIcon from '../images/priority_icon.png';
 type TaskCreationProps = {
     visibility?: string,
     visibilityChange?: any,
-    defineId: any
+    defineId: any,
     id: number
 }
 
+type Task = {
+    id: number,
+    name: string,
+    listId: number,
+    date: string,
+    priority: string,
+    description: string
+}
+
+type ValuePiece = Date | null;
+
+type Value = ValuePiece | [ValuePiece, ValuePiece];
+
 function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreationProps) {
     const tasks = useSelector((state: RootState) => state.task.tasks)
+    const lists = useSelector((state: RootState) => state.list.lists)
     const dispatch = useDispatch()
 
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [name, setName] = useState('')
+    const currentDate = new Date();
+    const array: any = []
+    const [isEditMode, setIsEditMode] = useState({
+        isName: false,
+        isStatus: false,
+        isDate: false,
+        isPriority: false,
+        isDescription: false
+    });
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [task, setTask] = useState<Task | null>(null);
+    const [taskId, setTaskId] = useState(0);
+    const [listObj, setListObj] = useState<any>([]);
+    const [date, setDate] = useState<Value>(new Date());
 
     useEffect(() => {
-        findTask()
-    }, [])
+        if (visibility === 'visible') {
+            findTask();
+            setName(tasks[taskId].name)
+        }
+
+    }, [visibility, taskId, listObj]);
+
+    useEffect(() => {
+        if (taskId !== -1 && tasks.length > 0) {
+            const gettedObj = lists.filter((list) => list.id === tasks[taskId].listId)
+            setListObj(gettedObj)
+
+            setTask(prevState => (tasks[taskId] as Task))
+        }
+
+    }, [taskId, tasks])
 
     function findTask() {
-        const taskId =  tasks.findIndex(task => task.id == id)
-        console.log(tasks)
-        // setName(tasks[taskId].name)
-    }   
+        defineId(id)
+        const findTaskId = tasks.findIndex(task => task.id === id)
+        setTaskId(findTaskId);
+    }
 
-    function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-        if (e.key ===  'Enter') {
+    async function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') {
             // state save
-            // const newTaskObject = 
-            // dispatch(updateTask({name: name}))
-            // console.log(task)
-            // setIsEditMode(false);
+            const updatedTask = { ...task, name: name, description: description } as Task;
+            setTask(updatedTask)
+
+            axios.patch(`http://localhost:8001/tasks/${id}`, { name: updatedTask.name, description: updatedTask.description })
+                .then((res: any) => {
+                    dispatch(updateTask({ id: id, updatedTask: updatedTask }))
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+
+            setIsEditMode((prevState) => ({ ...prevState, isName: false, isDescription: false }));
         }
+    }
+
+    function handleDateChange(date: any) {
+        const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const day = date.toLocaleDateString('en-US', { day: 'numeric' });
+        const month = date.toLocaleDateString('en-US', { month: 'short' });
+        const chosenDate = `${dayOfWeek}, ${day} ${month}`;
+        setDate(date)
+        axios.patch(`http://localhost:8001/tasks/${id}`, { date: chosenDate }).then((res) => {
+            dispatch(updateTask({ id: id, updatedTask: { ...task, date: chosenDate } }))
+        })
     }
 
     return (
         <div className={`task-creation ${visibility}`}>
             <div className='task-creation__close-block'>
-                <span className='close' onClick={() => { visibilityChange('hidden') }}></span>
+                <span
+                    className='close'
+                    onClick={() => {
+                        visibilityChange('hidden'); setIsEditMode({ isName: false, isDate: false, isStatus: false, isPriority: false, isDescription: false });
+                    }}>
+                </span>
             </div>
 
             <div className='task-creation__info'>
                 <div className='task-creation__data-block'>
                     <div className='task-creation__name-block'>
                         {/* PLACEHOLDER IS PREVIOUS STORE DATA */}
-                        {isEditMode
+                        {isEditMode.isName
                             ?
                             <input
                                 className='task-creation__name edit'
                                 type='text'
-                                value={name} 
+                                value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                onKeyDown={handleKeyDown}/>
+                                onKeyDown={handleKeyDown} />
                             :
                             <p className='task-creation__name visible'>{name}</p>
                         }
 
-                        <div className='task-creation__edit-block' onClick={() => setIsEditMode(!isEditMode)}>
+                        <div className='task-creation__edit-block' onClick={() => {
+                            if ((isEditMode.isName || isEditMode.isDate || isEditMode.isStatus || isEditMode.isPriority || isEditMode.isDescription) === true) {
+                                setIsEditMode({ isName: false, isDate: false, isStatus: false, isPriority: false, isDescription: false });
+                            }
+                            else {
+                                setIsEditMode({ isName: true, isDate: true, isStatus: false, isPriority: false, isDescription: true });
+                            }
+                        }}>
                             <img className='icon' src={editIcon} alt='edit' />
                             <p className='task-creation__edit'>Edit task</p>
                         </div>
@@ -76,8 +150,25 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
                                 <p className='task-creation__title'>Status</p>
                             </div>
 
-                            <div className='task-creation__data'>
-                                <p className='task-creation__status'>In propgress</p>
+                            <div className='task-creation__data' onClick={() => { setIsEditMode((prevState) => ({ ...prevState, isStatus: !isEditMode.isStatus })) }}>
+                                <p className='task-creation__status'>{listObj[0]?.name}</p>
+
+                                {isEditMode.isStatus ?
+                                    <div className='task-creation__status-change'>
+                                        {lists.map((list, index) => {
+                                            return <p
+                                                className='task-creation__status'
+                                                onClick={() => {
+                                                    axios.patch(`http://localhost:8001/tasks/${id}`, { listId: list.id }).then(() => {
+                                                        dispatch(updateTask({ id: id, updatedTask: { ...task, listId: list.id } }))
+                                                        setListObj((prevState: any) => (
+                                                            {...prevState[0], name: list.name}
+                                                            ))
+                                                    })
+                                                }}>{list.name}</p>
+                                        })}
+                                    </div>
+                                    : null}
                             </div>
                         </div>
                         <div className='task-creation__details'>
@@ -87,8 +178,19 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
                             </div>
 
                             {/* calendar */}
-                            <div className='task-creation__data'>
-                                <p className='task-creation__date'>Wed, 14</p>
+                            <div className='task-creation__data' onClick={() => { setIsEditMode((prevState) => ({ ...prevState, isDate: true })) }}>
+                                <p className='task-creation__date'>{task?.date}</p>
+
+
+                                {isEditMode.isDate ?
+                                    <div className='task-creation__date-change'>
+                                        <Calendar
+                                            className='custom-calendar'
+                                            value={date}
+                                            onChange={handleDateChange}
+                                        ></Calendar>
+                                    </div>
+                                    : null}
                             </div>
                         </div>
                         <div className='task-creation__details'>
@@ -98,15 +200,62 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
                             </div>
 
                             {/* Choose */}
-                            <div className='task-creation__data'>
-                                <p className='task-creation__priority'>Low</p>
+                            <div className='task-creation__data' onClick={() => { setIsEditMode((prevState) => ({ ...prevState, isPriority: !isEditMode.isPriority })) }}>
+                                <p className='task-creation__priority'>{task?.priority}</p>
+
+                                {isEditMode.isPriority ?
+                                    <div className='task-creation__priority-change'>
+                                        <p
+                                            className='task-creation__priority'
+                                            onClick={() => {
+                                                axios.patch(`http://localhost:8001/tasks/${id}`, { priority: 'Low' }).then(() => {
+                                                    dispatch(updateTask({ id: id, updatedTask: { ...task, priority: 'Low' } }))
+                                                    setTask((prevState: any) => (
+                                                        {...prevState, priority: 'Low'}
+                                                        ))
+                                                })
+                                            }}>Low</p>
+                                        <p
+                                            className='task-creation__priority'
+                                            onClick={() => {
+                                                axios.patch(`http://localhost:8001/tasks/${id}`, { priority: 'Medium' }).then(() => {
+                                                    dispatch(updateTask({ id: id, updatedTask: { ...task, priority: 'Medium' } }))
+                                                    setTask((prevState: any) => (
+                                                        {...prevState, priority: 'Medium'}
+                                                        ))
+                                                })
+                                            }}>Medium</p>
+                                        <p
+                                            className='task-creation__priority'
+                                            onClick={() => {
+                                                axios.patch(`http://localhost:8001/tasks/${id}`, { priority: 'High' }).then(() => {
+                                                    dispatch(updateTask({ id: id, updatedTask: { ...task, priority: 'High' } }))
+                                                    setTask((prevState: any) => (
+                                                        {...prevState, priority: 'High'}
+                                                        ))
+                                                })
+                                            }}>High</p>
+                                    </div>
+                                    : null
+                                }
                             </div>
                         </div>
                     </div>
 
                     <div className='task-creation__description-block'>
                         <p className='task-creation__description-title'>Description</p>
-                        <p className='task-creation__description'>My description, What I whant that I and write here !!!!! THIS IS MY DESCRIPTION!!!!! DO NOW!!!!! MINE DESCRIPTION121!!! gjhdfjgh  aaguhdaughduf dfg dfuigh adudfg njddgh dg dg ydg udgudg </p>
+
+                        {isEditMode.isDescription
+                            ?
+                            <input
+                                className='task-creation__description edit'
+                                type='text'
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                onKeyDown={handleKeyDown} />
+                            :
+                            <p className='task-creation__description'>{task?.description}</p>
+                        }
                     </div>
                 </div>
 

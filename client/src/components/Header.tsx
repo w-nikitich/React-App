@@ -33,7 +33,7 @@ function Header() {
                         <img className='icon' src={historyIcon} />
                         <p>History</p>
                     </div>
-                    <div className='new-list-button' onClick={() => {createNewList('tomorrow', 0)}}>
+                    <div className='new-list-button' onClick={() => {createNewList('in progress', 0)}}>
                         <img className='icon' src={plusIcon} />
                         <p className=''>Create new list</p>
                     </div>

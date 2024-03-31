@@ -17,10 +17,10 @@
 }
 
 .task__name-block {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-
 }
 
 .task__name {
@@ -85,10 +85,10 @@
 }
 
 .task__move {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
     margin-top: 10px;
     background-color: $blue-grey-color;
     border-radius: 4px;
@@ -113,5 +113,36 @@
     span::after {
         transform: rotate(45deg);
         right: 10px;
+    }
+}
+
+.task__move-list {
+    position: absolute;
+    top: 95%;
+    left: 0;
+    width: 100%;
+    background-color: $blue-grey-color;
+    text-transform: capitalize;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;  
+    z-index: 2;  
+
+    p {
+        padding: 5px 30%;
+        transition: all .5s ;
+
+        &:last-of-type {
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;    
+        }
+
+        &:not(:last-of-type) {
+            border-bottom: $dark-grey-color solid 1px;
+        }
+        
+        &:hover {
+            background-color: $dark-grey-color;
+            color: $white-color;
+        }
     }
 }

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import Container from 'react-bootstrap/Container';
 import type { RootState } from '../redux/store';
-import { updateTask, resetTask } from '../redux/reducers/taskSlice';
+import { updateAllTasks, resetTask } from '../redux/reducers/taskSlice';
 import { createList, updateList, getAllLists, resetList } from '../redux/reducers/listSlice';
 
 import TaskStatus from './TaskStatus';
@@ -17,18 +17,16 @@ function Main() {
 
     const [visibility, setVisibility] = useState('hidden');
     const [id, setId] = useState(0);
-    
-
-    // const lists: (any)[] = [];
 
     useEffect(() => {
-        // WE DONT HAVE TASKID
         axios.get('http://localhost:8001/taskLists').then((res) => {
             dispatch(getAllLists(res.data))
-        })
-        // findAllLists();
-        // dispatch(updateTask({name: name}))
-    }, [])
+        });
+
+        axios.get('http://localhost:8001/tasks').then((res) => {
+            dispatch(updateAllTasks(res.data))
+        });  
+    }, [visibility])
 
     function handleState(visibility:string) {
         setVisibility(visibility)
@@ -44,18 +42,21 @@ function Main() {
         }
     }
 
+    function findAmount(listId: number) {
+        let amount = 0;
+
+        tasks.forEach(task => {
+            if (task?.listId === listId) {
+                amount++;
+            }
+        })
+
+        return amount;
+    }
+
     function handleId(id: number) {
         setId(id);
     }
-
-    // function findAllLists() {
-    //     console.log(tasks)
-    //     tasks.forEach(task => {
-    //         if (!lists.includes(task.list)) {
-    //             lists.push(task.list);
-    //         }
-    //     })
-    // }
 
     return (
         <main>
@@ -63,8 +64,8 @@ function Main() {
                 {visibility ? <TaskEditing visibility={visibility} visibilityChange={handleState} defineId={handleId} id={id}/> : null}
                 
                 <div className='main__task-lists'>
-                    {lists.map((value,index) => (
-                         <TaskStatus id={value.id} status={value.name} amount={value.amount} visibilityChange={handleState}/>
+                    {lists.map((value:any, index:any) => (
+                        <TaskStatus id={value.id} status={value.name} amount={findAmount(value.id)} visibilityChange={handleState} defineId={handleId}/>
                     ))}  
                 </div> 
             </Container>
