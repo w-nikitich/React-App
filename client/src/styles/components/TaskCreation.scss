@@ -30,13 +30,13 @@
 .task-creation__info {
     display: flex;
     justify-content: space-between;
-    height: 40%;
+    height: 65vh;
 }
 
 .task-creation__name-block {
     display: flex;
     justify-content: space-between;
-    height: 35px;
+    height: fit-content;
 }
 
 .task-creation__name {
@@ -56,6 +56,7 @@
     border-radius: 4px;
     padding: 5px 15px;
     cursor: pointer;
+    height: 30px;
 }
 
 .task-creation__edit {
@@ -176,7 +177,6 @@
     padding: 40px 0 40px 40px;
     border-bottom-right-radius: 20px;
     overflow-y: scroll;
-
 }
 
 .task-creation__activity-title {
