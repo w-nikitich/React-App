@@ -5,7 +5,7 @@ Online-internship test task
 Run command 'npm install' for both 'React-App/client' and 'React-App/server' directories.
 
 ## DOCKER-COMPOSE
-Run command 'docker-compose up db' in root React-App directory.
+Open your docker app. Run command 'docker-compose up db' in root React-App directory.
 
 ## NPM START
 Run command 'npm start' for both 'React-App/client' and 'React-App/server' directories.
