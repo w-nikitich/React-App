@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import calendarIcon from '../images/calendar_icon.png'
-import Actions from './Actions';
 import axios from 'axios';
+import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../redux/store';
 import { updateTask, resetTask } from '../redux/reducers/taskSlice';
 import { createNewActivity } from '../redux/reducers/historySlice';
+import Actions from './Actions';
 
 type TaskData = {
     id: number,
@@ -15,10 +16,11 @@ type TaskData = {
     description: string,
     date: string,
     priority: string,
-    visibilityChange: any
+    visibilityChange: any,
+    index?: any
 }
 
-function Task({ id, curListId, defineId, name, description, date, priority, visibilityChange }: TaskData) {
+function Task({ id, curListId, defineId, name, description, date, priority, visibilityChange, index }: TaskData) {
     const history = useSelector((state: RootState) => state.history.history);
     const lists = useSelector((state: RootState) => state.list.lists);
     const dispatch = useDispatch();
@@ -76,15 +78,15 @@ function Task({ id, curListId, defineId, name, description, date, priority, visi
             dispatch(updateTask({ id: id, updatedTask: res.data }))
         })
 
-        axios.post('http://localhost:8001/history', {taskId: id, taskName: name, listId: listId, listName: lists.filter(list => list.id === listId)[0].name, oldData: `${lists.filter(list => list.id === curListId)[0].name}`, type: 'move task'}).then((res) => {
-            dispatch(createNewActivity({createdLog: res.data}))
+        axios.post('http://localhost:8001/history', { taskId: id, taskName: name, listId: listId, listName: lists.filter(list => list.id === listId)[0].name, oldData: `${lists.filter(list => list.id === curListId)[0].name}`, type: 'move task' }).then((res) => {
+            dispatch(createNewActivity({ createdLog: res.data }))
         })
     }
 
     async function deleteTask() {
         const deletedTask = await axios.delete(`http://localhost:8001/tasks/${id}`);
-        axios.post('http://localhost:8001/history', {taskId: deletedTask.data.id, taskName: deletedTask.data.name, listId: deletedTask.data.listId, listName: lists.filter(list => list.id === deletedTask.data.listId)[0].name, type: 'delete task'}).then((res) => {
-            dispatch(createNewActivity({createdLog: res.data}))
+        axios.post('http://localhost:8001/history', { taskId: deletedTask.data.id, taskName: deletedTask.data.name, listId: deletedTask.data.listId, listName: lists.filter(list => list.id === deletedTask.data.listId)[0].name, type: 'delete task' }).then((res) => {
+            dispatch(createNewActivity({ createdLog: res.data }))
         })
         dispatch(resetTask({ id: id }));
         setIsDeleted(true);
@@ -106,7 +108,7 @@ function Task({ id, curListId, defineId, name, description, date, priority, visi
 
             <div className='task__data-wrapper' onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                 const target = e.target as HTMLElement;
-                
+
                 if (target !== e.currentTarget) {
                     e.stopPropagation();
                 }

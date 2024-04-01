@@ -21,6 +21,12 @@ function Header() {
         axios.get('http://localhost:8001/history').then((res) => {
             dispatch(updateHistory(res.data))
         })
+
+        if (isHistoryOpened) {
+            document.body.style.backgroundColor = '#dddcea'
+        } else {
+            document.body.style.backgroundColor = '#fff'
+        }
     }, [isHistoryOpened,])
 
     function handleState(value: boolean) {

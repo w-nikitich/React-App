@@ -11,6 +11,7 @@
 }
 
 .task-creation__data-block {
+    position: relative;
     width: 60%;
     padding: 40px;
 }
@@ -29,7 +30,7 @@
 .task-creation__info {
     display: flex;
     justify-content: space-between;
-    height: 40vw;
+    height: 40%;
 }
 
 .task-creation__name-block {
@@ -165,7 +166,7 @@
     margin-top: 20px;
     color: $dark-grey-color;
     line-height: 1.7;
-    height: 150px;
+    height: 10vw;
     width: 100%;
 }
 
@@ -181,4 +182,24 @@
 .task-creation__activity-title {
     font-size: $medium-text-size;
     font-weight: 700;
+}
+
+@media screen and (max-width: 900px) {
+    .task-creation__data {
+        margin-left: 20px;
+    }
+    
+    .task-creation__name {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 769px) {
+    .task-creation__data {
+        margin-left: 40px;
+    } 
+
+    .task-creation__date-change {
+        width: 20vw;
+    }
 }

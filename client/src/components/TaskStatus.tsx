@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, KeyboardEvent } from 'react';
 import axios from 'axios';
 import type { RootState } from '../redux/store';
 import { useSelector, useDispatch } from 'react-redux';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { updateAllTasks, createNewTask, updateActivity, resetTask } from '../redux/reducers/taskSlice';
 import { resetList, updateList } from '../redux/reducers/listSlice';
 import { createNewActivity, resetHistory } from '../redux/reducers/historySlice';
@@ -26,7 +27,7 @@ type TaskTypes = {
     priority: any;
 }
 
-function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatusProps) {
+function TaskStatus({ id, status, amount, visibilityChange, defineId }: TaskStatusProps) {
     const tasks = useSelector((state: RootState) => state.task.tasks);
     const lists = useSelector((state: RootState) => state.list.lists);
     const history = useSelector((state: RootState) => state.history.history);
@@ -46,9 +47,9 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
             setTasksList((prevState: any) => {
                 const updatedList = prevState.filter((task: any) => res.data.includes(task))
                 return [...updatedList, ...res.data.filter((task: any) => !updatedList.includes(task))]
-            }); 
-        });  
-    }, [amount, lists])         
+            });
+        });
+    }, [amount, lists])
 
     useEffect(() => {
         setIsDeleted(false);
@@ -57,14 +58,14 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
     const createTask = async () => {
         const createdTask = await axios.post('http://localhost:8001/tasks', {
             name: 'New Task', listId: id, status: status, date: 'Wed, 19 Apr', priority: 'low', description: 'Your description'
-        })
+        });
         const createdLog = await axios.post('http://localhost:8001/history', {
             taskId: createdTask.data.id, taskName: createdTask.data.name, listId: createdTask.data.listId, listName: lists.filter(list => list.id === createdTask.data.listId)[0].name, type: 'create task'
         })
-        dispatch(updateList({data: {id: id, name: status, amount: amount++}}))
+        dispatch(updateList({ data: { id: id, name: status, amount: amount++ } }))
         setTasksList([...tasksList, createdTask.data])
         dispatch(createNewTask(createdTask.data))
-        dispatch(createNewActivity({createdLog: createdLog.data}))
+        dispatch(createNewActivity({ createdLog: createdLog.data }))
     }
 
     const deleteList = async () => {
@@ -72,15 +73,15 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
         const toDeleteTasks = tasksList.filter((task: any) => task.listId === id)
         toDeleteTasks.forEach((task: any) => {
             axios.delete(`http://localhost:8001/tasks/${id}`).then((res) => {
-                dispatch(resetTask({id: id}));
+                dispatch(resetTask({ id: id }));
             })
         })
-        
-        axios.post('http://localhost:8001/history', {listId: deletedList.data.id, listName: deletedList.data.name, type: 'delete list'}).then((res: any) => {
-            dispatch(createNewActivity({createdLog: {listId: res.data.id, type: 'delete list', listName: deletedList.data.name, createdAt: res.data.createdAt}}))
+
+        axios.post('http://localhost:8001/history', { listId: deletedList.data.id, listName: deletedList.data.name, type: 'delete list' }).then((res: any) => {
+            dispatch(createNewActivity({ createdLog: { listId: res.data.id, type: 'delete list', listName: deletedList.data.name, createdAt: res.data.createdAt } }))
         })
 
-        dispatch(resetList({id: id})); 
+        dispatch(resetList({ id: id }));
         setIsDeleted(true);
     }
 
@@ -100,16 +101,16 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
     function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
             const oldData = lists.filter(list => list.id === id);
-            axios.patch(`http://localhost:8001/taskLists/${id}`, {name: statusName})
-            .then((res) => {
-                dispatch(updateList({data: {id: id, name: res.data.name, amount: res.data.amount}}))
-            })
-            .catch((error) => {
-                console.error(error)
-            })
+            axios.patch(`http://localhost:8001/taskLists/${id}`, { name: statusName })
+                .then((res) => {
+                    dispatch(updateList({ data: { id: id, name: res.data.name, amount: res.data.amount } }))
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
 
-            axios.post('http://localhost:8001/history', {listId: id, listName: statusName, type: 'update list', oldData: oldData[0].name}).then((res) => {
-                dispatch(createNewActivity({createdLog: res.data}))
+            axios.post('http://localhost:8001/history', { listId: id, listName: statusName, type: 'update list', oldData: oldData[0].name }).then((res) => {
+                dispatch(createNewActivity({ createdLog: res.data }))
             })
             setIsEditMode(false)
         }
@@ -123,25 +124,25 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
         <div className='task-status__column'>
             <div className='task-status__data-block'>
 
-                {isEditMode ? 
+                {isEditMode ?
                     <input
                         className='task-status__name-change'
                         type='text'
                         value={statusName}
                         onChange={(e) => setStatusName(e.target.value)}
-                        onKeyDown={handleKeyDown}/>
+                        onKeyDown={handleKeyDown} />
                     : <p className='task-status__name'>{status}</p>
                 }
 
                 <div className='task-status__details'>
                     <p className='task-status__amount'>{amount}</p>
-                    <p className='actions' onClick={() => {handleActions()}}>
+                    <p className='actions' onClick={() => { handleActions() }}>
                         <span></span>
                         <span></span>
                         <span></span>
-                    </p>  
+                    </p>
 
-                    {actions === 'visible' ? <Actions visibility={actions} isTaskList={true} isEditMode={isEditMode} setIsEditMode={updateState} createTask={createTask} deleteList={deleteList} nameOfBlock={'list'}/> : null}
+                    {actions === 'visible' ? <Actions visibility={actions} isTaskList={true} isEditMode={isEditMode} setIsEditMode={updateState} createTask={createTask} deleteList={deleteList} nameOfBlock={'list'} /> : null}
 
                 </div>
             </div>
@@ -151,26 +152,40 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
                 <p>Add new card</p>
             </div>
 
-            <div>
-                {tasksList.map((task: TaskTypes) => {
-                    try {
-                        if (task?.listId == id) {
-                            return <Task
-                                id={task.id}
-                                curListId={task.listId}
-                                name={task.name}
-                                description={task.description || 'Task descriptions should be unambiguous, accurate, factual.'}
-                                date={task.date || 'Wed, 19 Apr'}
-                                priority={task.priority || 'Low'}
-                                visibilityChange={visibilityChange}
-                                defineId={(id: number) => handleId(task.id)}/>
-                        }
-                    }
-                    catch (error) {
-                        console.error(error)
-                    }
-                })}
-            </div>
+            <Droppable droppableId={id.toString()}>
+                {(provided) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps}>
+                        {tasksList.map((task: TaskTypes, index: number) => {
+                            try {
+                                if (task?.listId == id) {
+                                    return <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                                        {(provided) => (
+                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                <Task
+                                                    id={task.id}
+                                                    curListId={task.listId}
+                                                    name={task.name}
+                                                    description={task.description || 'Task descriptions should be unambiguous, accurate, factual.'}
+                                                    date={task.date || 'Wed, 19 Apr'}
+                                                    priority={task.priority || 'Low'}
+                                                    visibilityChange={visibilityChange}
+                                                    defineId={(id: number) => handleId(task.id)}
+                                                />
+                                            </div>
+                                        )}
+                                    </Draggable>
+
+                                }
+                            }
+                            catch (error) {
+                                console.error(error)
+                            }
+                        })}
+                        { provided.placeholder }
+                    </div>
+
+                )}
+            </Droppable>
         </div>
     );
 }

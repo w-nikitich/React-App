@@ -7,7 +7,7 @@
     right: 0;
     height: 100vh;
     background-color: $white-color;
-    width: 25vw;
+    width: 30%;
     z-index: 3;
 }
 
@@ -61,7 +61,7 @@
     &::before {
         content: '';
         position: absolute;
-        left: 0;
+        left: 2%;
         top: 30%;
         background-color: $middle-grey-color;
         width: 5px;
@@ -112,4 +112,10 @@
 
 .history__log-time, .activity__log-time {
     margin-top: 10px;
+}
+
+@media screen and (max-width: 769px) {
+    .history {
+        width: 40%;
+    }
 }
