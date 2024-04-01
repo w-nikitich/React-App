@@ -5,9 +5,11 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../redux/store';
 import { updateTask, resetTask } from '../redux/reducers/taskSlice';
+import { createNewActivity } from '../redux/reducers/historySlice';
 
 type TaskData = {
-    id: number
+    id: number,
+    curListId?: number,
     defineId?: any,
     name: string,
     description: string,
@@ -16,7 +18,8 @@ type TaskData = {
     visibilityChange: any
 }
 
-function Task({ id, defineId, name, description, date, priority, visibilityChange }: TaskData) {
+function Task({ id, curListId, defineId, name, description, date, priority, visibilityChange }: TaskData) {
+    const history = useSelector((state: RootState) => state.history.history);
     const lists = useSelector((state: RootState) => state.list.lists);
     const dispatch = useDispatch();
 
@@ -72,10 +75,17 @@ function Task({ id, defineId, name, description, date, priority, visibilityChang
         axios.patch(`http://localhost:8001/tasks/${id}`, { listId: listId }).then((res) => {
             dispatch(updateTask({ id: id, updatedTask: res.data }))
         })
+
+        axios.post('http://localhost:8001/history', {taskId: id, taskName: name, listId: listId, listName: lists.filter(list => list.id === listId)[0].name, oldData: `${lists.filter(list => list.id === curListId)[0].name}`, type: 'move task'}).then((res) => {
+            dispatch(createNewActivity({createdLog: res.data}))
+        })
     }
 
     async function deleteTask() {
-        await axios.delete(`http://localhost:8001/tasks/${id}`);
+        const deletedTask = await axios.delete(`http://localhost:8001/tasks/${id}`);
+        axios.post('http://localhost:8001/history', {taskId: deletedTask.data.id, taskName: deletedTask.data.name, listId: deletedTask.data.listId, listName: lists.filter(list => list.id === deletedTask.data.listId)[0].name, type: 'delete task'}).then((res) => {
+            dispatch(createNewActivity({createdLog: res.data}))
+        })
         dispatch(resetTask({ id: id }));
         setIsDeleted(true);
     }

@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Task } from './tasks/tasks.entity';
 import { TaskList } from './taskLists/taskLists.entity';
-import  { History } from './tasks/history.entity';
+import  { History } from './history/history.entity';
 
 export const databaseProviders = [
     {
@@ -17,6 +17,7 @@ export const databaseProviders = [
         });
         sequelize.addModels([Task]);
         sequelize.addModels([TaskList]);
+        sequelize.addModels([History]);
         await sequelize.sync();
         return sequelize;
       },

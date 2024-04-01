@@ -38,8 +38,6 @@ export const tasksSlice = createSlice({
             state.tasks[taskId] = action.payload.updatedTask;
         },
         updateAllTasks: (state, action: PayloadAction<Task[]>) => {
-            // const taskId = state.tasks.findIndex(task => task.id = action.payload.updatedTask.id);
-            // state.tasks[taskId] = action.payload.updatedTask;
             state.tasks = action.payload;
         },
         updateActivity: (state, action: PayloadAction<{id: number, activityText: string, activityTime: string}>) => {

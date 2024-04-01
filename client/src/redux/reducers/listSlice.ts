@@ -29,7 +29,6 @@ export const taskListsSlice = createSlice({
             state.lists[listIndex] = action.payload.data;
         },
         getAllLists: (state, action: PayloadAction<TaskList[]>) => {
-            console.log(action.payload)
             state.lists = action.payload;
         },
         resetList: (state, action: PayloadAction<{id: number}>) => {

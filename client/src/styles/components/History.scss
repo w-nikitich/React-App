@@ -1,0 +1,115 @@
+@import '../constants.scss';
+
+.history {
+    position: absolute;
+    overflow-y: scroll;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    background-color: $white-color;
+    width: 25vw;
+    z-index: 3;
+}
+
+.history__title {
+    background-color: $purple-color;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    span {
+        padding-top: 20px;
+        cursor: pointer;
+
+        &::after {
+            content: '';
+            position: absolute;
+            transform: rotate(45deg);
+            background-color: $white-color;
+            height: 20px;
+            width: 2px;
+            right: 20px;
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            transform: rotate(-45deg);
+            background-color: $white-color;
+            height: 20px;
+            width: 2px;
+            right: 20px;
+        }
+    }
+}
+
+.history__title-text {
+    color: $white-color;
+    font-weight: 500;
+    font-size: $default-text-size;
+    padding: 20px;
+}
+
+.history__log, .activity__log {
+    position: relative;
+    color: $middle-grey-color;
+    font-weight: 400;
+    font-size: $default-text-size;
+    padding: 20px;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 30%;
+        background-color: $middle-grey-color;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+    }
+}
+
+.history__log-decor.list, .activity__log-decor.list {
+    padding-left: 5px;
+    padding-right: 5px;
+    color: $darken-grey-color;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: capitalize;
+}
+
+.history__log-decor.task, .activity__log-decor.task {
+    position: relative;
+    padding-left: 15px;
+    padding-right: 5px;
+    color: $black-color;
+    text-transform: capitalize;
+    display: inline-block;
+
+    &::before {
+        position: absolute;
+        content: '';
+        top: 30%;
+        left: 4%;
+        background-color: $black-color;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+    }   
+
+    &::after {
+        position: absolute;
+        content: '';
+        top: 20%;
+        left: 2%;
+        width: 9px;
+        height: 9px;
+        border: $black-color solid 1px;
+        border-radius: 50%;
+    }
+}
+
+.history__log-time, .activity__log-time {
+    margin-top: 10px;
+}

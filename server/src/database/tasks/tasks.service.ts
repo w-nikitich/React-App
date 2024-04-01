@@ -26,7 +26,9 @@ export class TasksService {
     return this.tasksRepository.findOne<Task>({where: {id}})
   }
 
-  async destroy(id: number): Promise<number> {  
-    return this.tasksRepository.destroy<Task>({where: {id}});
+  async destroy(id: number): Promise<Task> {  
+    const destroyedTask = this.tasksRepository.findOne<Task>({where: {id}});
+    this.tasksRepository.destroy<Task>({where: {id}});
+    return destroyedTask
   }
 }

@@ -4,6 +4,7 @@ import type { RootState } from '../redux/store';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateAllTasks, createNewTask, updateActivity, resetTask } from '../redux/reducers/taskSlice';
 import { resetList, updateList } from '../redux/reducers/listSlice';
+import { createNewActivity, resetHistory } from '../redux/reducers/historySlice';
 import plusIcon from '../images/plus_icon.png';
 import Task from './Task';
 import Actions from './Actions';
@@ -28,6 +29,7 @@ type TaskTypes = {
 function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatusProps) {
     const tasks = useSelector((state: RootState) => state.task.tasks);
     const lists = useSelector((state: RootState) => state.list.lists);
+    const history = useSelector((state: RootState) => state.history.history);
     const dispatch = useDispatch();
 
     // LOCAL STATES
@@ -49,7 +51,6 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
     }, [amount, lists])         
 
     useEffect(() => {
-        console.log(isDeleted)
         setIsDeleted(false);
     }, [isDeleted])
 
@@ -57,18 +58,26 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
         const createdTask = await axios.post('http://localhost:8001/tasks', {
             name: 'New Task', listId: id, status: status, date: 'Wed, 19 Apr', priority: 'low', description: 'Your description'
         })
+        const createdLog = await axios.post('http://localhost:8001/history', {
+            taskId: createdTask.data.id, taskName: createdTask.data.name, listId: createdTask.data.listId, listName: lists.filter(list => list.id === createdTask.data.listId)[0].name, type: 'create task'
+        })
         dispatch(updateList({data: {id: id, name: status, amount: amount++}}))
         setTasksList([...tasksList, createdTask.data])
         dispatch(createNewTask(createdTask.data))
+        dispatch(createNewActivity({createdLog: createdLog.data}))
     }
 
     const deleteList = async () => {
-        await axios.delete(`http://localhost:8001/taskLists/${id}`)
+        const deletedList = await axios.delete(`http://localhost:8001/taskLists/${id}`)
         const toDeleteTasks = tasksList.filter((task: any) => task.listId === id)
         toDeleteTasks.forEach((task: any) => {
             axios.delete(`http://localhost:8001/tasks/${id}`).then((res) => {
                 dispatch(resetTask({id: id}));
             })
+        })
+        
+        axios.post('http://localhost:8001/history', {listId: deletedList.data.id, listName: deletedList.data.name, type: 'delete list'}).then((res: any) => {
+            dispatch(createNewActivity({createdLog: {listId: res.data.id, type: 'delete list', listName: deletedList.data.name, createdAt: res.data.createdAt}}))
         })
 
         dispatch(resetList({id: id})); 
@@ -90,14 +99,17 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
 
     function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
-            console.log(statusName)
+            const oldData = lists.filter(list => list.id === id);
             axios.patch(`http://localhost:8001/taskLists/${id}`, {name: statusName})
             .then((res) => {
-                console.log(res.data)
                 dispatch(updateList({data: {id: id, name: res.data.name, amount: res.data.amount}}))
             })
             .catch((error) => {
                 console.error(error)
+            })
+
+            axios.post('http://localhost:8001/history', {listId: id, listName: statusName, type: 'update list', oldData: oldData[0].name}).then((res) => {
+                dispatch(createNewActivity({createdLog: res.data}))
             })
             setIsEditMode(false)
         }
@@ -145,6 +157,7 @@ function TaskStatus({ id, status, amount, visibilityChange,defineId }: TaskStatu
                         if (task?.listId == id) {
                             return <Task
                                 id={task.id}
+                                curListId={task.listId}
                                 name={task.name}
                                 description={task.description || 'Task descriptions should be unambiguous, accurate, factual.'}
                                 date={task.date || 'Wed, 19 Apr'}

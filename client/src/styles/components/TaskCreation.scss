@@ -29,6 +29,7 @@
 .task-creation__info {
     display: flex;
     justify-content: space-between;
+    height: 40vw;
 }
 
 .task-creation__name-block {
@@ -164,6 +165,8 @@
     margin-top: 20px;
     color: $dark-grey-color;
     line-height: 1.7;
+    height: 150px;
+    width: 100%;
 }
 
 .task-creation__activity-block {
@@ -171,6 +174,8 @@
     width: 40%;
     padding: 40px 0 40px 40px;
     border-bottom-right-radius: 20px;
+    overflow-y: scroll;
+
 }
 
 .task-creation__activity-title {

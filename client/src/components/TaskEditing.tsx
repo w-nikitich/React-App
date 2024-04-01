@@ -4,6 +4,8 @@ import type { RootState } from '../redux/store';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { updateAllTasks, updateTask, resetTask } from '../redux/reducers/taskSlice';
+import { createNewActivity, updateHistory } from '../redux/reducers/historySlice';
+import Activity from './Activity';
 import editIcon from '../images/edit_icon.png';
 import statusIcon from '../images/status_icon.png';
 import calendarIcon from '../images/calendar_icon.png';
@@ -32,10 +34,11 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreationProps) {
     const tasks = useSelector((state: RootState) => state.task.tasks)
     const lists = useSelector((state: RootState) => state.list.lists)
+    const history = useSelector((state: RootState) => state.history.history)
     const dispatch = useDispatch()
 
     const currentDate = new Date();
-    const array: any = []
+
     const [isEditMode, setIsEditMode] = useState({
         isName: false,
         isStatus: false,
@@ -54,6 +57,10 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
         if (visibility === 'visible') {
             findTask();
             setName(tasks[taskId].name)
+
+            axios.get('http://localhost:8001/history').then((res) => {
+                dispatch(updateHistory(res.data))
+            })
         }
 
     }, [visibility, taskId, listObj]);
@@ -74,19 +81,38 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
         setTaskId(findTaskId);
     }
 
-    async function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    async function handleKeyDown(e: KeyboardEvent<HTMLInputElement> | KeyboardEvent<HTMLTextAreaElement>) {
         if (e.key === 'Enter') {
-            // state save
+            const oldTask = { ...task } as Task;
             const updatedTask = { ...task, name: name, description: description } as Task;
             setTask(updatedTask)
 
-            axios.patch(`http://localhost:8001/tasks/${id}`, { name: updatedTask.name, description: updatedTask.description })
+            if (description !== oldTask.description) {
+                axios.patch(`http://localhost:8001/tasks/${id}`, {description: updatedTask.description })
                 .then((res: any) => {
                     dispatch(updateTask({ id: id, updatedTask: updatedTask }))
                 })
                 .catch((error) => {
                     console.error(error);
                 })
+
+                axios.post('http://localhost:8001/history', { taskId: id, taskName: updatedTask.name, type: 'change description' }).then((res) => {
+                    dispatch(createNewActivity({ createdLog: res.data }))
+                })
+            }
+            else {
+                axios.patch(`http://localhost:8001/tasks/${id}`, { name: updatedTask.name })
+                    .then((res: any) => {
+                        dispatch(updateTask({ id: id, updatedTask: updatedTask }))
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    })
+
+                axios.post('http://localhost:8001/history', { taskId: id, taskName: updatedTask.name, type: 'rename task', oldData: `${oldTask.name}` }).then((res) => {
+                    dispatch(createNewActivity({ createdLog: res.data }))
+                })
+            }
 
             setIsEditMode((prevState) => ({ ...prevState, isName: false, isDescription: false }));
         }
@@ -100,6 +126,19 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
         setDate(date)
         axios.patch(`http://localhost:8001/tasks/${id}`, { date: chosenDate }).then((res) => {
             dispatch(updateTask({ id: id, updatedTask: { ...task, date: chosenDate } }))
+        })
+    }
+
+    function handlePriorityChange(priority: string, curPriority?: string) {
+        axios.patch(`http://localhost:8001/tasks/${id}`, { priority: priority }).then(() => {
+            dispatch(updateTask({ id: id, updatedTask: { ...task, priority: priority } }))
+            setTask((prevState: any) => (
+                { ...prevState, priority: priority }
+            ))
+        })
+
+        axios.post('http://localhost:8001/history', { taskId: id, taskName: name, newData: priority, type: 'change priority', oldData: `${curPriority}` }).then((res) => {
+            dispatch(createNewActivity({ createdLog: res.data }));
         })
     }
 
@@ -162,8 +201,14 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
                                                     axios.patch(`http://localhost:8001/tasks/${id}`, { listId: list.id }).then(() => {
                                                         dispatch(updateTask({ id: id, updatedTask: { ...task, listId: list.id } }))
                                                         setListObj((prevState: any) => (
-                                                            {...prevState[0], name: list.name}
-                                                            ))
+                                                            { ...prevState[0], name: list.name }
+                                                        ))
+                                                    })
+
+                                                    axios.post('http://localhost:8001/history',
+                                                        { taskId: id, taskName: name, listId: list.id, listName: list.name, type: 'move task', oldData: `${listObj[0]?.name}` }
+                                                    ).then((res: any) => {
+                                                        dispatch(createNewActivity({ createdLog: res.data }))
                                                     })
                                                 }}>{list.name}</p>
                                         })}
@@ -207,34 +252,13 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
                                     <div className='task-creation__priority-change'>
                                         <p
                                             className='task-creation__priority'
-                                            onClick={() => {
-                                                axios.patch(`http://localhost:8001/tasks/${id}`, { priority: 'Low' }).then(() => {
-                                                    dispatch(updateTask({ id: id, updatedTask: { ...task, priority: 'Low' } }))
-                                                    setTask((prevState: any) => (
-                                                        {...prevState, priority: 'Low'}
-                                                        ))
-                                                })
-                                            }}>Low</p>
+                                            onClick={() => { handlePriorityChange('Low', task?.priority) }}>Low</p>
                                         <p
                                             className='task-creation__priority'
-                                            onClick={() => {
-                                                axios.patch(`http://localhost:8001/tasks/${id}`, { priority: 'Medium' }).then(() => {
-                                                    dispatch(updateTask({ id: id, updatedTask: { ...task, priority: 'Medium' } }))
-                                                    setTask((prevState: any) => (
-                                                        {...prevState, priority: 'Medium'}
-                                                        ))
-                                                })
-                                            }}>Medium</p>
+                                            onClick={() => { handlePriorityChange('Medium', task?.priority) }}>Medium</p>
                                         <p
                                             className='task-creation__priority'
-                                            onClick={() => {
-                                                axios.patch(`http://localhost:8001/tasks/${id}`, { priority: 'High' }).then(() => {
-                                                    dispatch(updateTask({ id: id, updatedTask: { ...task, priority: 'High' } }))
-                                                    setTask((prevState: any) => (
-                                                        {...prevState, priority: 'High'}
-                                                        ))
-                                                })
-                                            }}>High</p>
+                                            onClick={() => { handlePriorityChange('High', task?.priority) }}>High</p>
                                     </div>
                                     : null
                                 }
@@ -247,12 +271,11 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
 
                         {isEditMode.isDescription
                             ?
-                            <input
+                            <textarea
                                 className='task-creation__description edit'
-                                type='text'
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                onKeyDown={handleKeyDown} />
+                                onKeyDown={handleKeyDown}></textarea>
                             :
                             <p className='task-creation__description'>{task?.description}</p>
                         }
@@ -261,6 +284,14 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
 
                 <div className='task-creation__activity-block'>
                     <p className='task-creation__activity-title'>Activity</p>
+
+                    {history.map((log, index) => {
+                        if (log.taskId === id) {
+                            return <Activity taskId={id} type={log.type} logObj={log}/>
+                        }
+                        else return null;
+                    })} 
+
                 </div>
             </div>
         </div>
