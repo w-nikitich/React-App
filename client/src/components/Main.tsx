@@ -16,9 +16,7 @@ function Main() {
     const dispatch = useDispatch();
 
     const [visibility, setVisibility] = useState('hidden');
-    const [listsState, setListsState] = useState(lists)
     const [id, setId] = useState(0);
-    const [boardData, setBoardData] = useState(lists);
 
     useEffect(() => {
         axios.get('http://localhost:8001/taskLists').then((res) => {
@@ -95,7 +93,7 @@ function Main() {
                     <div className='main__task-lists'>
                         {lists.map((value: any, index: any) => (
                             <div className='task-status__column'>
-                                <TaskStatus id={value.id} status={value.name} amount={findAmount(value.id)} visibilityChange={handleState} defineId={handleId} />
+                                <TaskStatus id={value.id} status={value.name} amount={findAmount(value.id)} visibilityChange={handleState} defineId={handleId}/>
                             </div>
                         ))}
                     </div>

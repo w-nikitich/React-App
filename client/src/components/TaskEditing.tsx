@@ -36,9 +36,7 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
     const lists = useSelector((state: RootState) => state.list.lists)
     const history = useSelector((state: RootState) => state.history.history)
     const dispatch = useDispatch()
-
-    const currentDate = new Date();
-
+     
     const [isEditMode, setIsEditMode] = useState({
         isName: false,
         isStatus: false,
@@ -63,14 +61,19 @@ function TaskEditing({ visibility, visibilityChange, defineId, id }: TaskCreatio
             })
         }
 
-    }, [visibility, taskId, listObj]);
+    }, [visibility, taskId, listObj, task]);
 
     useEffect(() => {
-        if (taskId !== -1 && tasks.length > 0) {
-            const gettedObj = lists.filter((list) => list.id === tasks[taskId].listId)
-            setListObj(gettedObj)
-
-            setTask(prevState => (tasks[taskId] as Task))
+        try {
+            if (taskId !== -1 && tasks.length > 0) {
+                const gettedObj = lists.filter((list) => list.id === tasks[taskId].listId)
+                setListObj(gettedObj)
+    
+                setTask(prevState => (tasks[taskId] as Task))
+            }
+        }
+        catch(error) {
+            console.error(error)
         }
 
     }, [taskId, tasks])
